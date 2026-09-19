@@ -30,7 +30,7 @@ func (h *Handler) CreateUser(c *gin.Context) {
 			c.JSON(404, gin.H{"error": "invalid name"})
 			return
 		}
-		c.JSON(500, gin.H{"error": "internal error"})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{"id": id})

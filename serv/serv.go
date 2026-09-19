@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 	"tgtest/domain"
-	"tgtest/repo"
 )
 
 var ErrInvalidName = errors.New("невалидное имя")
@@ -19,7 +18,7 @@ type Service struct {
 	repo RepoInterface
 }
 
-func CreateServ(repo *repo.Repository) *Service {
+func CreateServ(repo RepoInterface) *Service {
 	return &Service{repo: repo}
 }
 func (s *Service) CreateUser(ctx context.Context, name, email string) (string, error) {

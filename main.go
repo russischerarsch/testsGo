@@ -23,4 +23,7 @@ func main() {
 	handler := http.CreateHandler(serv)
 	router := gin.Default()
 	router.POST("/user", handler.CreateUser)
+	if err := router.Run(":8080"); err != nil {
+		return
+	}
 }
