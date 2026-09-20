@@ -10,3 +10,5 @@ type User struct {
 }
 
 var ErrUserAlreadyExists = errors.New("пользователь уже существует")
+var ErrInvalidName = errors.New("невалидное имя")
+var ErrInvalidEmail = errors.New("невалидная почта")

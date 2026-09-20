@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"tgtest/domain"
 	"tgtest/serv"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +27,7 @@ func (h *Handler) CreateUser(c *gin.Context) {
 	}
 	id, err := h.service.CreateUser(c.Request.Context(), req.Name, req.Email)
 	if err != nil {
-		if errors.Is(err, serv.ErrInvalidName) {
+		if errors.Is(err, domain.ErrInvalidName) {
 			c.JSON(404, gin.H{"error": "invalid name"})
 			return
 		}
