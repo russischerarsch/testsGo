@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="10" failures="0" errors="0" time="8.350181">
+	<testsuite tests="0" failures="0" time="0.000000" name="tgtest" timestamp="2026-09-20T16:56:23+04:00">
+		<properties>
+			<property name="go.version" value="go1.25.11 darwin/arm64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="tgtest/conn" timestamp="2026-09-20T16:56:23+04:00">
+		<properties>
+			<property name="go.version" value="go1.25.11 darwin/arm64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="tgtest/domain" timestamp="2026-09-20T16:56:23+04:00">
+		<properties>
+			<property name="go.version" value="go1.25.11 darwin/arm64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="tgtest/http" timestamp="2026-09-20T16:56:23+04:00">
+		<properties>
+			<property name="go.version" value="go1.25.11 darwin/arm64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="tgtest/repo" timestamp="2026-09-20T16:56:23+04:00">
+		<properties>
+			<property name="go.version" value="go1.25.11 darwin/arm64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="10" failures="0" time="7.152000" name="tgtest/serv" timestamp="2026-09-20T16:56:25+04:00">
+		<properties>
+			<property name="go.version" value="go1.25.11 darwin/arm64"></property>
+		</properties>
+		<testcase classname="tgtest/serv" name="TestCreateUser_DuplicateEmail" time="0.000000"></testcase>
+		<testcase classname="tgtest/serv" name="TestCreateUser_ValidateName/empty_name" time="0.000000"></testcase>
+		<testcase classname="tgtest/serv" name="TestCreateUser_ValidateName/only_spaces" time="0.000000"></testcase>
+		<testcase classname="tgtest/serv" name="TestCreateUser_ValidateName/one_symbol" time="0.000000"></testcase>
+		<testcase classname="tgtest/serv" name="TestCreateUser_ValidateName" time="0.000000"></testcase>
+		<testcase classname="tgtest/serv" name="TestCreateUser_ValidateEmail/empty_email" time="0.000000"></testcase>
+		<testcase classname="tgtest/serv" name="TestCreateUser_ValidateEmail/long_email" time="0.000000"></testcase>
+		<testcase classname="tgtest/serv" name="TestCreateUser_ValidateEmail/email_without_@" time="0.000000"></testcase>
+		<testcase classname="tgtest/serv" name="TestCreateUser_ValidateEmail" time="0.000000"></testcase>
+		<testcase classname="tgtest/serv" name="TestCreateUser_Integration_Success" time="0.000000"></testcase>
+	</testsuite>
+</testsuites>

@@ -74,20 +74,23 @@ func TestCreateUser_ValidateEmail(t *testing.T) {
 	service := CreateServ(repository)
 
 	testCases := []struct {
-		name  string
-		input string
+		name   string
+		input  string
+		caseID int64
 	}{
 		{
 			name:  "empty email",
 			input: "",
 		},
 		{
-			name:  "long email",
-			input: strings.Repeat("a", 65) + "@x.com",
+			name:   "long email",
+			input:  strings.Repeat("a", 65) + "@x.com",
+			caseID: 11,
 		},
 		{
-			name:  "email without @",
-			input: "jroinboie.com",
+			name:   "email without @",
+			input:  "jroinboie.com",
+			caseID: 12,
 		},
 	}
 	for _, testCase := range testCases {
