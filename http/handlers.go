@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"net/http"
 	"tgtest/domain"
 	"tgtest/serv"
 
@@ -28,11 +29,11 @@ func (h *Handler) CreateUser(c *gin.Context) {
 	id, err := h.service.CreateUser(c.Request.Context(), req.Name, req.Email)
 	if err != nil {
 		if errors.Is(err, domain.ErrInvalidName) {
-			c.JSON(404, gin.H{"error": "invalid name"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid name"})
 			return
 		}
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"id": id})
+	c.JSON(http.StatusCreated, gin.H{"id": id})
 }

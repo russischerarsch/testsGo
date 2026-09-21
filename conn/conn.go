@@ -7,8 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func CreateConnection(ctx context.Context) (*pgx.Conn, error) {
-	connStr := "postgres://a1111:dkfl26052010@localhost:5432/postgres?sslmode=disable"
+func CreateConnection(connStr string, ctx context.Context) (*pgx.Conn, error) {
 	conn, err := pgx.Connect(ctx, connStr)
 	if err != nil {
 		return nil, fmt.Errorf("подключение к PostgreSQL: %w", err)
