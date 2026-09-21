@@ -39,9 +39,9 @@ jobs:
           script: |
             cd /app
             git pull
-            go build -o app
-            systemctl restart app
-
+            export PATH=$PATH:/usr/local/go/bin
+            CGO_ENABLED=0 go build -o app
+            sudo /usr/bin/systemctl restart app
   e2e:
     needs: deploy
     runs-on: ubuntu-latest
