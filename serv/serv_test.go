@@ -11,7 +11,6 @@ import (
 )
 
 type repoMock struct {
-	// createFunc func(ctx context.Context, user *domain.User) (int, error)
 	mock.Mock
 }
 
@@ -24,7 +23,7 @@ func TestCreateUser_DuplicateEmail(t *testing.T) {
 	repository := new(repoMock)
 	repository.On("CreateUser", mock.Anything, mock.Anything).Return(0, domain.ErrUserAlreadyExists)
 	service := CreateServ(repository)
-	_, err := service.CreateUser(context.Background(), "Иван", "aarara@gmail.com")
+	_, err := service.CreateUser(context.Background(), "Иван", "aarara@gmail.com", "Qwerty123!", 19)
 	if err == nil {
 		if !errors.Is(err, domain.ErrUserAlreadyExists) {
 			t.Fatalf("ожидалась ошибка %v, фактическая ошибка %v", domain.ErrUserAlreadyExists, err)
@@ -58,7 +57,7 @@ func TestCreateUser_ValidateName(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			_, err := service.CreateUser(context.Background(), testCase.input, "vntoebn@gmail.com")
+			_, err := service.CreateUser(context.Background(), testCase.input, "vntoebn@gmail.com", "Qwerty123!", 19)
 			if !errors.Is(err, domain.ErrInvalidName) {
 				t.Fatalf("expected error %v, actual error %v", domain.ErrInvalidName, err)
 			}
@@ -92,7 +91,7 @@ func TestCreateUser_ValidateEmail(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			_, err := service.CreateUser(context.Background(), "Oleg", testCase.input)
+			_, err := service.CreateUser(context.Background(), "Oleg", testCase.input, "Qwerty123!", 19)
 			if !errors.Is(err, domain.ErrInvalidEmail) {
 				t.Fatalf("expected error %v, actual %v", domain.ErrInvalidEmail, err)
 			}

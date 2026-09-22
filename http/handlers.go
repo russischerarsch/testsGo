@@ -19,14 +19,16 @@ func CreateHandler(serv *serv.Service) *Handler {
 
 func (h *Handler) CreateUser(c *gin.Context) {
 	var req struct {
-		Name  string `json:"name"`
-		Email string `json:"email"`
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+		Age      int    `json:"age"`
 	}
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(404, gin.H{"error": "bad request"})
 		return
 	}
-	id, err := h.service.CreateUser(c.Request.Context(), req.Name, req.Email)
+	id, err := h.service.CreateUser(c.Request.Context(), req.Name, req.Email, req.Password, req.Age)
 	if err != nil {
 		if errors.Is(err, domain.ErrInvalidName) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid name"})
