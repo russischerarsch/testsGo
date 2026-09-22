@@ -1,3 +1,5 @@
+//go:build integration
+
 package serv
 
 import (
@@ -23,4 +25,5 @@ func TestCreateUser_Integration_Success(t *testing.T) {
 	if name != "Oleg" {
 		t.Fatalf("expected name 'Oleg', got %v", name)
 	}
+
 }
