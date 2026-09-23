@@ -1,23 +1,26 @@
 package http
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"tgtest/domain"
-	"tgtest/serv"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Handler struct {
-	service *serv.Service
+type Handler interface {
+	CreateUser(context.Context, string, string, string, string) (string, error)
+}
+type HandlerStruct struct {
+	handler Handler
 }
 
-func CreateHandler(serv *serv.Service) *Handler {
-	return &Handler{service: serv}
+func CreateHandler(serv Handler) *HandlerStruct {
+	return &HandlerStruct{handler: serv}
 }
 
-func (h *Handler) CreateUser(c *gin.Context) {
+func (h *HandlerStruct) CreateUser(c *gin.Context) {
 	var req struct {
 		Name     string `json:"name"`
 		Email    string `json:"email"`
@@ -28,7 +31,7 @@ func (h *Handler) CreateUser(c *gin.Context) {
 		c.JSON(404, gin.H{"error": "bad request"})
 		return
 	}
-	id, err := h.service.CreateUser(c.Request.Context(), req.Name, req.Email, req.Password, req.Age)
+	id, err := h.handler.CreateUser(c.Request.Context(), req.Name, req.Email, req.Password, req.Age)
 	if err != nil {
 		if errors.Is(err, domain.ErrInvalidName) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid name"})

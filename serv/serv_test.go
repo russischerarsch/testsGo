@@ -11,14 +11,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// type repoMock struct {
-// 	mock.Mock
-// }
-
-//	func (r *repoMock) CreateUser(ctx context.Context, user *domain.User) (string, error) {
-//		args := r.Called(ctx, user)
-//		return args.String(0), args.Error(1)
-//	}
 func TestCreateUser_DuplicateEmail(t *testing.T) {
 	repository := mocks.NewRepoInterface(t)
 	repository.On("CreateUser", mock.Anything, mock.Anything).Return("", domain.ErrUserAlreadyExists).Once()
@@ -26,12 +18,17 @@ func TestCreateUser_DuplicateEmail(t *testing.T) {
 	_, err := service.CreateUser(context.Background(), "Иван", "aarara@gmail.com", "Qwerty123!", "19")
 	assert.ErrorIs(t, err, domain.ErrUserAlreadyExists)
 
-	repository.AssertExpectations(t)
 }
 
+func TestCreateUser_TimeOutExceeded(t *testing.T) {
+	repository := mocks.NewRepoInterface(t)
+	repository.On("CreateUser", mock.Anything, mock.Anything).Return("0", context.DeadlineExceeded)
+	service := CreateServ(repository)
+	_, err := service.CreateUser(context.Background(), "Oleg", "oleg@example.com", "Qwerty123!", "20")
+	assert.ErrorIs(t, err, context.DeadlineExceeded)
+}
 func TestCreateUser_ValidateName(t *testing.T) {
 	repository := mocks.NewRepoInterface(t)
-	repository.On("CreateUser", mock.Anything, mock.Anything)
 	service := CreateServ(repository)
 	testCases := []struct {
 		name  string
@@ -60,7 +57,6 @@ func TestCreateUser_ValidateName(t *testing.T) {
 }
 func TestCreateUser_ValidateEmail(t *testing.T) {
 	repository := mocks.NewRepoInterface(t)
-	repository.On("CreateUser", mock.Anything, mock.Anything)
 	service := CreateServ(repository)
 
 	testCases := []struct {
