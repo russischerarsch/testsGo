@@ -10,8 +10,10 @@ import (
 
 func TestCreateUserE2E(t *testing.T) {
 	reqBody := map[string]string{
-		"name":  "Oleg",
-		"email": "oleg@example.com",
+		"name":     "Oleg",
+		"email":    "oleg@example.com",
+		"password": "Qwerty123!",
+		"Age":      "22",
 	}
 	body, err := json.Marshal(reqBody)
 	if err != nil {

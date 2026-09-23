@@ -10,7 +10,7 @@ import (
 func TestCreateUser_Integration_Success(t *testing.T) {
 	repo := repo.CreateRepo(testConn)
 	svc := CreateServ(repo)
-	id, err := svc.CreateUser(ctx, "Oleg", "oleg@exmpl.com", "Qwerty123!", 22)
+	id, err := svc.CreateUser(ctx, "Oleg", "oleg@exmpl.com", "Qwerty123!", "22")
 	if err != nil {
 		t.Fatalf("unexpected error %v", err)
 	}

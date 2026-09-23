@@ -8,7 +8,7 @@ type User struct {
 	Email    string
 	Balance  float64
 	Password string
-	Age      int
+	Age      string
 }
 
 var ErrUserAlreadyExists = errors.New("пользователь уже существует")

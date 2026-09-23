@@ -2,39 +2,35 @@ package serv
 
 import (
 	"context"
-	"errors"
 	"strings"
 	"testing"
 	"tgtest/domain"
+	"tgtest/serv/mocks"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-type repoMock struct {
-	mock.Mock
-}
+// type repoMock struct {
+// 	mock.Mock
+// }
 
-func (r *repoMock) CreateUser(ctx context.Context, user *domain.User) (int, error) {
-	args := r.Called(ctx, user)
-	return args.Int(0), args.Error(1)
-}
-
+//	func (r *repoMock) CreateUser(ctx context.Context, user *domain.User) (string, error) {
+//		args := r.Called(ctx, user)
+//		return args.String(0), args.Error(1)
+//	}
 func TestCreateUser_DuplicateEmail(t *testing.T) {
-	repository := new(repoMock)
-	repository.On("CreateUser", mock.Anything, mock.Anything).Return(0, domain.ErrUserAlreadyExists)
+	repository := mocks.NewRepoInterface(t)
+	repository.On("CreateUser", mock.Anything, mock.Anything).Return("", domain.ErrUserAlreadyExists).Once()
 	service := CreateServ(repository)
-	_, err := service.CreateUser(context.Background(), "Иван", "aarara@gmail.com", "Qwerty123!", 19)
-	if err == nil {
-		if !errors.Is(err, domain.ErrUserAlreadyExists) {
-			t.Fatalf("ожидалась ошибка %v, фактическая ошибка %v", domain.ErrUserAlreadyExists, err)
-		}
-		t.Fatalf("expected err %v, actual %v", domain.ErrUserAlreadyExists, err)
-	}
+	_, err := service.CreateUser(context.Background(), "Иван", "aarara@gmail.com", "Qwerty123!", "19")
+	assert.ErrorIs(t, err, domain.ErrUserAlreadyExists)
+
 	repository.AssertExpectations(t)
 }
 
 func TestCreateUser_ValidateName(t *testing.T) {
-	repository := new(repoMock)
+	repository := mocks.NewRepoInterface(t)
 	repository.On("CreateUser", mock.Anything, mock.Anything)
 	service := CreateServ(repository)
 	testCases := []struct {
@@ -57,44 +53,69 @@ func TestCreateUser_ValidateName(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			_, err := service.CreateUser(context.Background(), testCase.input, "vntoebn@gmail.com", "Qwerty123!", 19)
-			if !errors.Is(err, domain.ErrInvalidName) {
-				t.Fatalf("expected error %v, actual error %v", domain.ErrInvalidName, err)
-			}
+			_, err := service.CreateUser(context.Background(), testCase.input, "vntoebn@gmail.com", "Qwerty123!", "19")
+			assert.ErrorIs(t, err, domain.ErrInvalidName)
 		})
 	}
 }
 func TestCreateUser_ValidateEmail(t *testing.T) {
-	repository := new(repoMock)
+	repository := mocks.NewRepoInterface(t)
 	repository.On("CreateUser", mock.Anything, mock.Anything)
 	service := CreateServ(repository)
 
 	testCases := []struct {
-		name   string
-		input  string
-		caseID int64
+		name  string
+		input string
 	}{
 		{
 			name:  "empty email",
 			input: "",
 		},
 		{
-			name:   "long email",
-			input:  strings.Repeat("a", 65) + "@x.com",
-			caseID: 11,
+			name:  "long email",
+			input: strings.Repeat("a", 65) + "@x.com",
 		},
 		{
-			name:   "email without @",
-			input:  "jroinboie.com",
-			caseID: 12,
+			name:  "email without @",
+			input: "jroinboie.com",
 		},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			_, err := service.CreateUser(context.Background(), "Oleg", testCase.input, "Qwerty123!", 19)
-			if !errors.Is(err, domain.ErrInvalidEmail) {
-				t.Fatalf("expected error %v, actual %v", domain.ErrInvalidEmail, err)
-			}
+			_, err := service.CreateUser(context.Background(), "Oleg", testCase.input, "Qwerty123!", "19")
+			assert.ErrorIs(t, err, domain.ErrInvalidEmail)
+		})
+	}
+}
+
+func TestCreateUser_ValidatePass(t *testing.T) {
+	repository := mocks.NewRepoInterface(t)
+	service := CreateServ(repository)
+	testCases := []struct {
+		name    string
+		input   string
+		wantErr error
+	}{
+		{
+			name:    "short password",
+			input:   "Qwerty!",
+			wantErr: domain.ErrShortPassword,
+		},
+		{
+			name:    "Lower letter",
+			input:   "qwerty123!",
+			wantErr: domain.ErrNoUpperLetter,
+		},
+		{
+			name:    "No special symbols",
+			input:   "Qwerty123",
+			wantErr: domain.ErrNoSpecialChar,
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			_, err := service.CreateUser(context.Background(), "Oleg", "oleg@example.com", testCase.input, "19")
+			assert.ErrorIs(t, err, testCase.wantErr)
 		})
 	}
 }

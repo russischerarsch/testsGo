@@ -12,7 +12,7 @@ import (
 )
 
 type RepoInterface interface {
-	CreateUser(ctx context.Context, user *domain.User) (int, error)
+	CreateUser(ctx context.Context, user *domain.User) (string, error)
 }
 
 type Service struct {
@@ -22,8 +22,12 @@ type Service struct {
 func CreateServ(repo RepoInterface) *Service {
 	return &Service{repo: repo}
 }
-func (s *Service) CreateUser(ctx context.Context, name, email, password string, age int) (string, error) {
-	if age < 18 {
+func (s *Service) CreateUser(ctx context.Context, name, email, password, age string) (string, error) {
+	ageInt, err := strconv.Atoi(age)
+	if err != nil {
+		return "", fmt.Errorf("failed to convert age")
+	}
+	if ageInt < 18 {
 		return "", domain.ErrAgeForbidden
 	}
 	if len(password) < 8 {
@@ -66,5 +70,5 @@ func (s *Service) CreateUser(ctx context.Context, name, email, password string, 
 	if err != nil {
 		return "", err
 	}
-	return strconv.Itoa(id), nil
+	return id, nil
 }
