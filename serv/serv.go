@@ -30,9 +30,9 @@ func CreateEventService(writer *kafka.Writer) *EventService {
 }
 
 type UserCreatedEvent struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
+	UserID    string    `json:"user_id"`
+	EventID   string    `json:"event_id"`
+	Action    string    `json:"action"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -46,7 +46,7 @@ func (e *EventService) PublishEvent(ctx context.Context, topic string, event *Us
 		return err
 	}
 	e.writer.WriteMessages(ctx, kafka.Message{
-		Key:   []byte(event.ID),
+		Key:   []byte(event.UserID),
 		Topic: topic,
 		Value: data,
 	})

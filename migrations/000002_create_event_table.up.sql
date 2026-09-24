@@ -1,0 +1,8 @@
+CREATE TABLE events (
+id UUID NOT NULL UNIQUE,
+event_id BIGINT NOT NULL,
+user_id BIGINT NOT NULL, 
+action TEXT NOT NULL, 
+created_at TIMESTAMPTZ NOT NULL,
+status BOOLEAN NOT NULL DEFAULT false
+)

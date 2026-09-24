@@ -1,0 +1,9 @@
+version: '3'
+
+tasks:
+  migrate-create:
+    desc: Создать миграцию
+    vars:
+      NAME: '{{.CLI_ARGS}}'
+    cmds:
+      - migrate create -ext sql -dir migrations -seq {{.NAME}}
