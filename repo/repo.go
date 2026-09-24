@@ -30,7 +30,7 @@ func (r *Repository) CreateUser(ctx context.Context, eventID string, user *domai
 	VALUES($1, $2)
 	RETURNING id
 	`
-	if err := r.db.QueryRow(ctx, query, user.Name, user.Email).Scan(&user.Id); err != nil {
+	if err := tx.QueryRow(ctx, query, user.Name, user.Email).Scan(&user.Id); err != nil {
 		return "0", err
 	}
 	var event = &serv.UserCreatedEvent{
@@ -41,7 +41,13 @@ func (r *Repository) CreateUser(ctx context.Context, eventID string, user *domai
 	}
 	query = `
 	INSERT INTO events (user_id, event_id, action, created_at)
+	VALUES ($1, $2, $3, $4)
 	`
-	r.db.Exec(ctx)
+	if _, err := tx.Exec(ctx, query, event.UserID, event.EventID, event.Action, event.CreatedAt); err != nil {
+		return "", err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return "", err
+	}
 	return strconv.Itoa(user.Id), nil
 }

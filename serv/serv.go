@@ -10,6 +10,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/google/uuid"
 	"github.com/segmentio/kafka-go"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -18,7 +19,7 @@ type EventService struct {
 	writer *kafka.Writer
 }
 type RepoInterface interface {
-	CreateUser(ctx context.Context, user *domain.User) (string, error)
+	CreateUser(ctx context.Context, topic string, user *domain.User) (string, error)
 }
 
 type Service struct {
@@ -97,7 +98,8 @@ func (s *Service) CreateUser(ctx context.Context, name, email, password, age str
 		Password: string(pass),
 		Age:      age,
 	}
-	id, err := s.repo.CreateUser(ctx, user)
+	eventID := uuid.New()
+	id, err := s.repo.CreateUser(ctx, eventID.String(), user)
 	if err != nil {
 		return "", err
 	}

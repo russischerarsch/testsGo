@@ -15,7 +15,7 @@ type RepoInterface struct {
 }
 
 // CreateUser provides a mock function with given fields: ctx, user
-func (_m *RepoInterface) CreateUser(ctx context.Context, user *domain.User) (string, error) {
+func (_m *RepoInterface) CreateUser(ctx context.Context, eventID string, user *domain.User) (string, error) {
 	ret := _m.Called(ctx, user)
 
 	if len(ret) == 0 {

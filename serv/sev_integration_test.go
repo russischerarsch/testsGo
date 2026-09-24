@@ -4,11 +4,11 @@ package serv
 
 import (
 	"testing"
-	"tgtest/repo"
+	"tgtest/serv/mocks"
 )
 
 func TestCreateUser_Integration_Success(t *testing.T) {
-	repo := repo.CreateRepo(testConn)
+	repo := mocks.NewRepoInterface(t)
 	svc := CreateServ(repo)
 	id, err := svc.CreateUser(ctx, "Oleg", "oleg@exmpl.com", "Qwerty123!", "22")
 	if err != nil {

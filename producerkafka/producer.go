@@ -11,7 +11,7 @@ func CreateWriter(brokers []string, topic string) *kafka.Writer {
 		Addr:         kafka.TCP(brokers...),
 		Topic:        topic,
 		Balancer:     &kafka.LeastBytes{},
-		RequiredAcks: kafka.RequireAll,
+		RequiredAcks: kafka.RequireOne,
 		BatchTimeout: 10 * time.Millisecond,
 	}
 }
