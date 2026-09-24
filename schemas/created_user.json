@@ -3,8 +3,7 @@
     "required": [
         "name",
         "email",
-        "password",
-        "age"
+        "created_at"
     ],
     "properties": {
         "name": {
@@ -15,12 +14,9 @@
             "type": "string",
             "format": "email"
         },
-        "password": {
+        "created_at": {
             "type": "string",
-            "minLength": 1
-        },
-        "age": {
-            "type": "string"
+            "format": "date-time"
         }
     }
 }

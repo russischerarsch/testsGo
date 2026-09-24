@@ -2,15 +2,21 @@ package serv
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 	"tgtest/domain"
+	"time"
 	"unicode"
 
+	"github.com/segmentio/kafka-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
+type EventService struct {
+	writer *kafka.Writer
+}
 type RepoInterface interface {
 	CreateUser(ctx context.Context, user *domain.User) (string, error)
 }
@@ -19,9 +25,34 @@ type Service struct {
 	repo RepoInterface
 }
 
+func CreateEventService(writer *kafka.Writer) *EventService {
+	return &EventService{writer: writer}
+}
+
+type UserCreatedEvent struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
 func CreateServ(repo RepoInterface) *Service {
 	return &Service{repo: repo}
 }
+
+func (e *EventService) PublishEvent(ctx context.Context, topic string, event *UserCreatedEvent) error {
+	data, err := json.Marshal(event)
+	if err != nil {
+		return err
+	}
+	e.writer.WriteMessages(ctx, kafka.Message{
+		Key:   []byte(event.ID),
+		Topic: topic,
+		Value: data,
+	})
+	return nil
+}
+
 func (s *Service) CreateUser(ctx context.Context, name, email, password, age string) (string, error) {
 	ageInt, err := strconv.Atoi(age)
 	if err != nil {

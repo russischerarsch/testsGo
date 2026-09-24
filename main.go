@@ -7,8 +7,10 @@ import (
 	"os"
 	"tgtest/conn"
 	"tgtest/http"
+	"tgtest/producerkafka"
 	"tgtest/repo"
 	"tgtest/serv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-migrate/migrate/v4"
@@ -36,6 +38,19 @@ func main() {
 		log.Fatalf("failed to set migrations %v", err)
 	}
 	m.Close()
+	cfg := producerkafka.LoadKafkaConfig()
+	writer := producerkafka.CreateWriter(cfg.Brokers, cfg.Topic)
+	eventService := serv.CreateEventService(writer)
+	err = eventService.PublishEvent(ctx, "user-event", &serv.UserCreatedEvent{
+		ID:        "1",
+		Name:      "Daria",
+		Email:     "daria@example.com",
+		CreatedAt: time.Now(),
+	})
+	if err != nil {
+		log.Fatalf("failed to send event to kafka, %v", err)
+	}
+	defer writer.Close()
 	repo := repo.CreateRepo(conn)
 	serv := serv.CreateServ(repo)
 	handler := http.CreateHandler(serv)
