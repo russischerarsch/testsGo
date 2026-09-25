@@ -8,6 +8,5 @@ type KafkaConfig struct {
 func LoadKafkaConfig() *KafkaConfig {
 	return &KafkaConfig{
 		Brokers: []string{"localhost:9092"},
-		Topic:   "user-event",
 	}
 }

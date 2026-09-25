@@ -42,9 +42,9 @@ func main() {
 	writer := producerkafka.CreateWriter(cfg.Brokers, cfg.Topic)
 	eventService := serv.CreateEventService(writer)
 	err = eventService.PublishEvent(ctx, "user-event", &serv.UserCreatedEvent{
-		ID:        "1",
-		Name:      "Daria",
-		Email:     "daria@example.com",
+		UserID:    "1",
+		EventID:   "1",
+		Action:    "register",
 		CreatedAt: time.Now(),
 	})
 	if err != nil {

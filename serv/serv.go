@@ -46,11 +46,14 @@ func (e *EventService) PublishEvent(ctx context.Context, topic string, event *Us
 	if err != nil {
 		return err
 	}
-	e.writer.WriteMessages(ctx, kafka.Message{
+	err = e.writer.WriteMessages(ctx, kafka.Message{
 		Key:   []byte(event.UserID),
 		Topic: topic,
 		Value: data,
 	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
