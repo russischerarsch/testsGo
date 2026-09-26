@@ -14,9 +14,17 @@ type RepoInterface struct {
 	mock.Mock
 }
 
-// CreateUser provides a mock function with given fields: ctx, user
-func (_m *RepoInterface) CreateUser(ctx context.Context, eventID string, user *domain.User) (string, error) {
-	ret := _m.Called(ctx, user)
+type RepoInterface_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *RepoInterface) EXPECT() *RepoInterface_Expecter {
+	return &RepoInterface_Expecter{mock: &_m.Mock}
+}
+
+// CreateUser provides a mock function with given fields: ctx, topic, user
+func (_m *RepoInterface) CreateUser(ctx context.Context, topic string, user *domain.User) (string, error) {
+	ret := _m.Called(ctx, topic, user)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateUser")
@@ -24,22 +32,100 @@ func (_m *RepoInterface) CreateUser(ctx context.Context, eventID string, user *d
 
 	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) (string, error)); ok {
-		return rf(ctx, user)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *domain.User) (string, error)); ok {
+		return rf(ctx, topic, user)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) string); ok {
-		r0 = rf(ctx, user)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *domain.User) string); ok {
+		r0 = rf(ctx, topic, user)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *domain.User) error); ok {
-		r1 = rf(ctx, user)
+	if rf, ok := ret.Get(1).(func(context.Context, string, *domain.User) error); ok {
+		r1 = rf(ctx, topic, user)
 	} else {
 		r1 = ret.Error(1)
 	}
 
 	return r0, r1
+}
+
+// RepoInterface_CreateUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateUser'
+type RepoInterface_CreateUser_Call struct {
+	*mock.Call
+}
+
+// CreateUser is a helper method to define mock.On call
+//   - ctx context.Context
+//   - topic string
+//   - user *domain.User
+func (_e *RepoInterface_Expecter) CreateUser(ctx interface{}, topic interface{}, user interface{}) *RepoInterface_CreateUser_Call {
+	return &RepoInterface_CreateUser_Call{Call: _e.mock.On("CreateUser", ctx, topic, user)}
+}
+
+func (_c *RepoInterface_CreateUser_Call) Run(run func(ctx context.Context, topic string, user *domain.User)) *RepoInterface_CreateUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string), args[2].(*domain.User))
+	})
+	return _c
+}
+
+func (_c *RepoInterface_CreateUser_Call) Return(_a0 string, _a1 error) *RepoInterface_CreateUser_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *RepoInterface_CreateUser_Call) RunAndReturn(run func(context.Context, string, *domain.User) (string, error)) *RepoInterface_CreateUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UpdateBalance provides a mock function with given fields: ctx, userID, amount
+func (_m *RepoInterface) UpdateBalance(ctx context.Context, userID string, amount int64) error {
+	ret := _m.Called(ctx, userID, amount)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateBalance")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, int64) error); ok {
+		r0 = rf(ctx, userID, amount)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// RepoInterface_UpdateBalance_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateBalance'
+type RepoInterface_UpdateBalance_Call struct {
+	*mock.Call
+}
+
+// UpdateBalance is a helper method to define mock.On call
+//   - ctx context.Context
+//   - userID string
+//   - amount int64
+func (_e *RepoInterface_Expecter) UpdateBalance(ctx interface{}, userID interface{}, amount interface{}) *RepoInterface_UpdateBalance_Call {
+	return &RepoInterface_UpdateBalance_Call{Call: _e.mock.On("UpdateBalance", ctx, userID, amount)}
+}
+
+func (_c *RepoInterface_UpdateBalance_Call) Run(run func(ctx context.Context, userID string, amount int64)) *RepoInterface_UpdateBalance_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string), args[2].(int64))
+	})
+	return _c
+}
+
+func (_c *RepoInterface_UpdateBalance_Call) Return(_a0 error) *RepoInterface_UpdateBalance_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *RepoInterface_UpdateBalance_Call) RunAndReturn(run func(context.Context, string, int64) error) *RepoInterface_UpdateBalance_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewRepoInterface creates a new instance of RepoInterface. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

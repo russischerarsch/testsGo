@@ -9,13 +9,15 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateUser_DuplicateEmail(t *testing.T) {
 	repository := mocks.NewRepoInterface(t)
 	repository.On("CreateUser", mock.Anything, mock.Anything).Return("", domain.ErrUserAlreadyExists).Once()
-	service := CreateServ(repository)
-	_, err := service.CreateUser(context.Background(), "Иван", "aarara@gmail.com", "Qwerty123!", "19")
+	service, err := CreateServ(repository)
+	require.NoError(t, err)
+	_, err = service.CreateUser(context.Background(), "Иван", "aarara@gmail.com", "Qwerty123!", "19")
 	assert.ErrorIs(t, err, domain.ErrUserAlreadyExists)
 
 }
@@ -23,13 +25,15 @@ func TestCreateUser_DuplicateEmail(t *testing.T) {
 func TestCreateUser_TimeOutExceeded(t *testing.T) {
 	repository := mocks.NewRepoInterface(t)
 	repository.On("CreateUser", mock.Anything, mock.Anything).Return("0", context.DeadlineExceeded)
-	service := CreateServ(repository)
-	_, err := service.CreateUser(context.Background(), "Oleg", "oleg@example.com", "Qwerty123!", "20")
+	service, err := CreateServ(repository)
+	require.NoError(t, err)
+	_, err = service.CreateUser(context.Background(), "Oleg", "oleg@example.com", "Qwerty123!", "20")
 	assert.ErrorIs(t, err, context.DeadlineExceeded)
 }
 func TestCreateUser_ValidateName(t *testing.T) {
 	repository := mocks.NewRepoInterface(t)
-	service := CreateServ(repository)
+	service, err := CreateServ(repository)
+	require.NoError(t, err)
 	testCases := []struct {
 		name  string
 		input string
@@ -57,8 +61,8 @@ func TestCreateUser_ValidateName(t *testing.T) {
 }
 func TestCreateUser_ValidateEmail(t *testing.T) {
 	repository := mocks.NewRepoInterface(t)
-	service := CreateServ(repository)
-
+	service, err := CreateServ(repository)
+	require.NoError(t, err)
 	testCases := []struct {
 		name  string
 		input string
@@ -86,7 +90,8 @@ func TestCreateUser_ValidateEmail(t *testing.T) {
 
 func TestCreateUser_ValidatePass(t *testing.T) {
 	repository := mocks.NewRepoInterface(t)
-	service := CreateServ(repository)
+	service, err := CreateServ(repository)
+	require.NoError(t, err)
 	testCases := []struct {
 		name    string
 		input   string

@@ -18,3 +18,5 @@ var ErrNoUpperLetter = errors.New("необходима буква в верхн
 var ErrShortPassword = errors.New("Слишком короткий пароль")
 var ErrAgeForbidden = errors.New("пользователь должен быть старше 18 лет")
 var ErrNoSpecialChar = errors.New("нет специального знака")
+var ErrUserNotFound = errors.New("user was not found")
+var ErrInvalidInput = errors.New("data invalid")

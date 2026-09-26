@@ -13,12 +13,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateUser_integrationTest(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
 	repo.On("CreateUser", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return("1", nil)
-	service := serv.CreateServ(repo)
+	service, err := serv.CreateServ(repo)
+	require.NoError(t, err)
 	handler := CreateHandler(service)
 	router := gin.Default()
 	router.POST("/users", handler.CreateUser)

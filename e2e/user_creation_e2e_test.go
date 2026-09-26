@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -49,4 +50,15 @@ func TestCreateUserE2E(t *testing.T) {
 	if name != "Oleg" {
 		t.Fatalf("expected name 'Oleg', got %v", name)
 	}
+	t.Cleanup(func() {
+		ctx := context.Background()
+		query := `
+		DELETE FROM users
+		WHERE id = $1
+		`
+		if _, err := testConn.Exec(ctx, query, id); err != nil {
+			t.Fatalf("failed to delete row")
+		}
+	})
 }
+func TestGetBalance_ClientRPC(t *testing.T) {}

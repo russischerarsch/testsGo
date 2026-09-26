@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"tgtest/apiclient"
 	"tgtest/domain"
 	"time"
 	"unicode"
@@ -13,6 +14,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/segmentio/kafka-go"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type EventService struct {
@@ -20,10 +23,7 @@ type EventService struct {
 }
 type RepoInterface interface {
 	CreateUser(ctx context.Context, topic string, user *domain.User) (string, error)
-}
-
-type Service struct {
-	repo RepoInterface
+	UpdateBalance(ctx context.Context, userID string, amount int64) error
 }
 
 func CreateEventService(writer *kafka.Writer) *EventService {
@@ -36,9 +36,43 @@ type UserCreatedEvent struct {
 	Action    string    `json:"action"`
 	CreatedAt time.Time `json:"created_at"`
 }
+type Service struct {
+	repo   RepoInterface
+	client apiclient.BalanceClientRPC
+}
 
-func CreateServ(repo RepoInterface) *Service {
-	return &Service{repo: repo}
+func CreateServ(repo RepoInterface) (*Service, error) {
+	client, err := apiclient.CreateClientRPC()
+	if err != nil {
+		return nil, err
+	}
+	return &Service{client: client, repo: repo}, nil
+}
+
+func (e *Service) GetBalance(ctx context.Context, userID string) (string, error) {
+	response, err := e.client.GetBalance(ctx, userID)
+	if err != nil {
+		st, ok := status.FromError(err)
+		if !ok {
+			return "", err
+		}
+		switch st.Code() {
+		case codes.NotFound:
+			return "", domain.ErrUserNotFound
+		case codes.DeadlineExceeded:
+			return "", context.DeadlineExceeded
+		case codes.InvalidArgument:
+			return "", domain.ErrInvalidInput
+		default:
+			return "", fmt.Errorf("get balance failed: %w", err)
+
+		}
+	}
+	if err := e.repo.UpdateBalance(ctx, userID, response.Balance); err != nil {
+		return "", err
+	}
+	balance := strconv.Itoa(int(response.Balance))
+	return balance, nil
 }
 
 func (e *EventService) PublishEvent(ctx context.Context, topic string, event *UserCreatedEvent) error {

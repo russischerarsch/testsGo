@@ -58,7 +58,10 @@ func TestMain(t *testing.M) {
 	}
 	m.Close()
 	repository := repo.CreateRepo(conn)
-	service := serv.CreateServ(repository)
+	service, err := serv.CreateServ(repository)
+	if err != nil {
+		log.Fatalf("failed to create service, %v", err)
+	}
 	handler := http.CreateHandler(service)
 	router := gin.Default()
 	router.POST("/users", handler.CreateUser)

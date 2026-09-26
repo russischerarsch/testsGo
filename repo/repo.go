@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"tgtest/domain"
 	"tgtest/serv"
@@ -16,6 +17,19 @@ type Repository struct {
 
 func CreateRepo(db *pgx.Conn) *Repository {
 	return &Repository{db: db}
+}
+func (r *Repository) UpdateBalance(ctx context.Context, userID string, amount int64) error {
+	query := `
+	UPDATE users
+	SET balance = $1
+	WHERE user_id = $2
+	`
+	if resp, err := r.db.Exec(ctx, query, userID, amount); err != nil {
+		if resp.RowsAffected() == 0 {
+			return fmt.Errorf("failed to find user, %w", pgx.ErrNoRows)
+		}
+	}
+	return nil
 }
 
 func (r *Repository) CreateUser(ctx context.Context, eventID string, user *domain.User) (string, error) {

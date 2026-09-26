@@ -7,11 +7,12 @@ import (
 	"tgtest/domain"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 )
 
 type Handler interface {
 	CreateUser(context.Context, string, string, string, string) (string, error)
-	// GetBalance(context.Context, string)
+	GetBalance(context.Context, string) (string, error)
 }
 type HandlerStruct struct {
 	handler Handler
@@ -26,6 +27,27 @@ func (h *HandlerStruct) GetBalance(c *gin.Context) {
 	if userID == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "user id is missing"})
 	}
+	balance, err := h.handler.GetBalance(c.Request.Context(), userID)
+	if err != nil {
+		switch err {
+		case domain.ErrUserNotFound:
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+			return
+		case pgx.ErrNoRows:
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+			return
+		case context.DeadlineExceeded:
+			c.JSON(http.StatusGatewayTimeout, gin.H{"error": context.DeadlineExceeded})
+			return
+		case domain.ErrInvalidInput:
+			c.JSON(http.StatusBadRequest, gin.H{"error": domain.ErrInvalidInput})
+			return
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+	c.JSON(200, balance)
 }
 
 func (h *HandlerStruct) CreateUser(c *gin.Context) {
