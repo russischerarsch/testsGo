@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package balance;
+
+option go_package = "testGo/proto/pb";
+
+message GetBalanceRequest {
+    string account_id = 1;
+}
+
+message GetBalanceResponse {
+    string account_id = 1;
+    int64 balance = 2;
+}
+
+service BalanceService {
+    rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
+}

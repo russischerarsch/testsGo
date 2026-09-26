@@ -9,8 +9,10 @@ import (
 	"tgtest/http/mocks"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateUser_handlerTest(t *testing.T) {
@@ -27,23 +29,46 @@ func TestCreateUser_handlerTest(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, recorder.Code)
 }
 
-func TestCreateUser_withClientTest(t *testing.T) {
-	service := mocks.NewHandler(t)
-	service.On("CreateUser", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return("1", nil)
-	handler := CreateHandler(service)
-	router := gin.Default()
-	router.POST("/users", handler.CreateUser)
-	server := httptest.NewServer(router)
-	defer server.Close()
+func TestCreateUser_Success(t *testing.T) {
+	httpClient := &http.Client{}
+	httpmock.ActivateNonDefault(httpClient)
+	defer httpmock.DeactivateAndReset()
 
-	client := apiclient.CreateClient(server.URL)
+	httpmock.RegisterResponder(
+		http.MethodPost,
+		"http://example.com/users",
+		httpmock.NewJsonResponderOrPanic(http.StatusCreated, map[string]string{"id": "123"}),
+	)
+
+	client := apiclient.CreateClientWithHTTP("http://example.com", httpClient)
 
 	resp, err := client.CreateUser(&apiclient.ClientCreateUserRequest{
 		Name:     "Daria",
 		Email:    "daria@example.com",
 		Password: "Qwerty123!",
-		Age:      "22",
+		Age:      "30",
 	})
-	assert.NoError(t, err)
-	assert.Equal(t, "1", resp.ID)
+
+	require.NoError(t, err)
+	assert.Equal(t, "123", resp.ID)
+}
+
+func TestCreateUser_ServerError(t *testing.T) {
+	httpClient := &http.Client{}
+	httpmock.ActivateNonDefault(httpClient)
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder(
+		http.MethodPost,
+		"http://example.com/users",
+		httpmock.NewStringResponder(http.StatusInternalServerError, "internal error"),
+	)
+
+	client := apiclient.CreateClientWithHTTP("http://example.com", httpClient)
+
+	_, err := client.CreateUser(&apiclient.ClientCreateUserRequest{
+		Name: "John",
+	})
+
+	require.Error(t, err)
 }

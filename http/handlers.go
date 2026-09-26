@@ -11,6 +11,7 @@ import (
 
 type Handler interface {
 	CreateUser(context.Context, string, string, string, string) (string, error)
+	// GetBalance(context.Context, string)
 }
 type HandlerStruct struct {
 	handler Handler
@@ -20,7 +21,15 @@ func CreateHandler(serv Handler) *HandlerStruct {
 	return &HandlerStruct{handler: serv}
 }
 
+func (h *HandlerStruct) GetBalance(c *gin.Context) {
+	userID := c.GetHeader("X-User-Id")
+	if userID == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user id is missing"})
+	}
+}
+
 func (h *HandlerStruct) CreateUser(c *gin.Context) {
+
 	var req struct {
 		Name     string `json:"name"`
 		Email    string `json:"email"`

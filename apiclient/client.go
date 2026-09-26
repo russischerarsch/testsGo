@@ -24,7 +24,9 @@ type ClientCreateUserResponse struct {
 func CreateClient(baseURL string) *Client {
 	return &Client{baseURL: baseURL, http: http.DefaultClient}
 }
-
+func CreateClientWithHTTP(baseURL string, httpClient *http.Client) *Client {
+	return &Client{baseURL: baseURL, http: httpClient}
+}
 func (c *Client) CreateUser(req *ClientCreateUserRequest) (*ClientCreateUserResponse, error) {
 	data, err := json.Marshal(req)
 	if err != nil {
