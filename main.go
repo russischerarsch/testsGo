@@ -52,7 +52,10 @@ func main() {
 	}
 	defer writer.Close()
 	repo := repo.CreateRepo(conn)
-	serv := serv.CreateServ(repo)
+	serv, err := serv.CreateServ(repo)
+	if err != nil {
+		return
+	}
 	handler := http.CreateHandler(serv)
 	router := gin.Default()
 	router.POST("/user", handler.CreateUser)

@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 	"tgtest/http"
+	"tgtest/proto/pb"
 	"tgtest/repo"
 	"tgtest/serv"
 
@@ -23,6 +24,13 @@ var ctx = context.Background()
 var testConn *pgx.Conn
 var serverURL string
 
+type myServer struct {
+	pb.UnimplementedBalanceServiceServer
+}
+
+func (s *myServer) GetBalance(ctx context.Context, req *pb.GetBalanceRequest) (*pb.GetBalanceResponse, error) {
+	return &pb.GetBalanceResponse{Balance: 100}, nil
+}
 func TestMain(t *testing.M) {
 	req := testcontainers.ContainerRequest{
 		Image:        "postgres:16-alpine",
