@@ -24,7 +24,9 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
+
 	connStr := os.Getenv("POSTGRES_CONN")
+	fmt.Println(connStr)
 	conn, err := conn.CreateConnection(connStr, ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -58,7 +60,7 @@ func main() {
 	}
 	handler := http.CreateHandler(serv)
 	router := gin.Default()
-	router.POST("/user", handler.CreateUser)
+	router.POST("/users", handler.CreateUser)
 	if err := router.Run(":8080"); err != nil {
 		return
 	}

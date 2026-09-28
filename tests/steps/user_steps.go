@@ -6,7 +6,10 @@ type UserSteps struct {
 	client *clients.HttpClient
 }
 
-func (c *UserSteps) CreateUserSteps(name, email, password, age string) (*clients.CreateUserResponse, error) {
+func CreateUserSteps(client *clients.HttpClient) *UserSteps {
+	return &UserSteps{client: client}
+}
+func (c *UserSteps) CreateUserSuccessfully(name, email, password, age string) (*clients.CreateUserResponse, error) {
 	req := clients.CreateUserRequest{
 		Name:     name,
 		Email:    email,
