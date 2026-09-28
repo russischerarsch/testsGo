@@ -25,14 +25,13 @@ func CreateKafkaClient(brokers []string, topic string) *KafkaClient {
 	})
 	return &KafkaClient{Writer: writer, Reader: reader}
 }
+func (c *KafkaClient) Close() {
+	c.Reader.Close()
+	c.Writer.Close()
+}
 func (c *KafkaClient) Producer(ctx context.Context, value []byte) error {
 	return c.Writer.WriteMessages(ctx, kafka.Message{Value: value})
 }
 func (c *KafkaClient) Consume(ctx context.Context) (kafka.Message, error) {
 	return c.Reader.ReadMessage(ctx)
-}
-func (c *KafkaClient) Close() {
-	c.Reader.Close()
-	c.Writer.Close()
-	return
 }
