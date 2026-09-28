@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type httpClient struct {
+type HttpClient struct {
 	client  *http.Client
 	baseURL string
 }
@@ -22,15 +22,15 @@ type CreateUserResponse struct {
 	ID string `json:"id"`
 }
 
-func CreateHTTPClient(url string) *httpClient {
-	return &httpClient{
+func CreateHttpClient(url string) *HttpClient {
+	return &HttpClient{
 		baseURL: url,
 		client: &http.Client{
 			Timeout: 5 * time.Second,
 		},
 	}
 }
-func Post[T any](c *httpClient, path string, req interface{}) (*T, error) {
+func Post[T any](c *HttpClient, path string, req interface{}) (*T, error) {
 	data, err := json.Marshal(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal request body, %w", err)
