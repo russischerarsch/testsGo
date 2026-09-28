@@ -20,6 +20,9 @@ func CreatePostgresClient(dsn string) (*PostgresClient, error) {
 	}
 	return &PostgresClient{db: conn}, nil
 }
+func (c *PostgresClient) Close() {
+	c.db.Close()
+}
 func (c *PostgresClient) GetUserID(ctx context.Context, name string) (string, error) {
 	query := `
 	SELECT id FROM users 
@@ -30,7 +33,4 @@ func (c *PostgresClient) GetUserID(ctx context.Context, name string) (string, er
 		return "", err
 	}
 	return id, nil
-}
-func (c *PostgresClient) Close() {
-	c.db.Close()
 }
